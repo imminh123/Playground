@@ -1,0 +1,12 @@
+{
+  "name": "playground",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=fe-citation-chatbot",
+    "build": "npm run build --workspace=fe-citation-chatbot",
+    "lint": "npm run lint --workspace=fe-citation-chatbot"
+  }
+}
