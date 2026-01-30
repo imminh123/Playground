@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useStore } from '../store/useStore';
-import { Tag } from './Tag';
 import { FileIcon } from './FileIcon';
 import type { Asset, ExperienceInventory } from '../types';
 
@@ -34,9 +33,7 @@ export function AssetTable() {
   const {
     assets,
     experienceInventories,
-    tags,
     currentFolderId,
-    filterTagIds,
     searchQuery,
     setCurrentFolder,
     openModal,
@@ -60,12 +57,6 @@ export function AssetTable() {
 
   const displayedItems = useMemo(() => {
     let filtered = allItems.filter((item) => item.parentId === currentFolderId);
-
-    if (filterTagIds.length > 0) {
-      filtered = filtered.filter((item) =>
-        filterTagIds.some((tagId) => item.tags.includes(tagId))
-      );
-    }
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -99,7 +90,7 @@ export function AssetTable() {
       if (a.type !== 'folder' && b.type === 'folder') return 1;
       return 0;
     });
-  }, [allItems, currentFolderId, filterTagIds, searchQuery, sortField, sortDirection]);
+  }, [allItems, currentFolderId, searchQuery, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -127,10 +118,6 @@ export function AssetTable() {
     } else if (item.type === 'experience-inventory') {
       navigate(`/inventory/${item.id}`);
     }
-  };
-
-  const getItemTags = (tagIds: string[]) => {
-    return tags.filter((tag) => tagIds.includes(tag.id));
   };
 
   return (
@@ -171,11 +158,6 @@ export function AssetTable() {
                   Type
                   <SortIcon field="type" />
                 </button>
-              </th>
-              <th className="text-left px-4 py-3">
-                <span className="text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider">
-                  Tags
-                </span>
               </th>
               <th className="text-left px-4 py-3">
                 <button
@@ -230,18 +212,6 @@ export function AssetTable() {
                     <span className="text-sm text-[var(--color-text-secondary)] capitalize">
                       {item.type === 'experience-inventory' ? 'Inventory' : item.type.toUpperCase()}
                     </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1">
-                      {getItemTags(item.tags).slice(0, 3).map((tag) => (
-                        <Tag key={tag.id} name={tag.name} color={tag.color} size="sm" />
-                      ))}
-                      {item.tags.length > 3 && (
-                        <span className="text-xs text-[var(--color-text-muted)] px-1">
-                          +{item.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-sm text-[var(--color-text-secondary)]">
@@ -334,7 +304,7 @@ export function AssetTable() {
             </div>
             <p className="text-[var(--color-text-secondary)] mb-1">No assets found</p>
             <p className="text-sm text-[var(--color-text-muted)]">
-              {searchQuery || filterTagIds.length > 0
+              {searchQuery
                 ? 'Try adjusting your filters'
                 : 'Upload files or create a folder to get started'}
             </p>

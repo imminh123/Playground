@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { ArrowLeft, Search, Sparkles, Send, AtSign, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useStore } from '../store/useStore';
+import { FileIcon } from './FileIcon';
 import type { Companion, Skill, KnowledgeRetrievalConfig, PlanningConfig } from '../types';
 
 function CompanionCard({ companion, onClick }: { companion: Companion; onClick: () => void }) {
@@ -38,27 +39,28 @@ function SkillConfig({
   isEnabled: boolean;
   onToggle: () => void;
 }) {
-  const { tags, experienceInventories, updateSkill } = useStore();
+  const { assets, experienceInventories, updateSkill } = useStore();
   const [isOpen, setIsOpen] = useState(false);
 
   const isKnowledgeRetrieval = skill.type === 'knowledge-retrieval';
   const config = skill.config as KnowledgeRetrievalConfig | PlanningConfig;
 
-  const selectedTags = isKnowledgeRetrieval
-    ? tags.filter((tag) => (config as KnowledgeRetrievalConfig).tagIds.includes(tag.id))
+  const allAssets = assets;
+  const selectedAssetIds = isKnowledgeRetrieval
+    ? (config as KnowledgeRetrievalConfig).assetIds
     : [];
 
   const selectedInventory = !isKnowledgeRetrieval
     ? experienceInventories.find((inv) => inv.id === (config as PlanningConfig).experienceInventoryId)
     : null;
 
-  const toggleTag = (tagId: string) => {
+  const toggleAsset = (assetId: string) => {
     if (!isKnowledgeRetrieval) return;
     const currentConfig = config as KnowledgeRetrievalConfig;
-    const newTagIds = currentConfig.tagIds.includes(tagId)
-      ? currentConfig.tagIds.filter((id) => id !== tagId)
-      : [...currentConfig.tagIds, tagId];
-    updateSkill(skill.id, { config: { tagIds: newTagIds } });
+    const newAssetIds = currentConfig.assetIds.includes(assetId)
+      ? currentConfig.assetIds.filter((id) => id !== assetId)
+      : [...currentConfig.assetIds, assetId];
+    updateSkill(skill.id, { config: { assetIds: newAssetIds } });
   };
 
   const selectInventory = (inventoryId: string | null) => {
@@ -108,22 +110,23 @@ function SkillConfig({
           {isKnowledgeRetrieval ? (
             <div>
               <label className="text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider">
-                Document Tags
+                Linked Documents & Folders
               </label>
               <div className="mt-2 flex flex-wrap gap-2">
-                {tags.map((tag) => (
+                {allAssets.map((asset) => (
                   <button
-                    key={tag.id}
-                    onClick={() => toggleTag(tag.id)}
+                    key={asset.id}
+                    onClick={() => toggleAsset(asset.id)}
                     className={`
-                      px-2.5 py-1 rounded-md text-xs font-medium border transition-all
-                      ${selectedTags.some((t) => t.id === tag.id)
+                      px-2.5 py-1 rounded-md text-xs font-medium border transition-all flex items-center gap-1.5
+                      ${selectedAssetIds.includes(asset.id)
                         ? 'bg-[var(--color-accent-muted)] border-[var(--color-accent-primary)] text-[var(--color-accent-primary)]'
                         : 'bg-[var(--color-bg-primary)] border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)]'
                       }
                     `}
                   >
-                    {tag.name}
+                    <FileIcon type={asset.type} size={12} />
+                    {asset.name}
                   </button>
                 ))}
               </div>

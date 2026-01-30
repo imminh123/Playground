@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
-import { Tag } from './Tag';
 import { useStore } from '../store/useStore';
 import type { SchemaColumn } from '../types';
 
@@ -134,7 +133,7 @@ function EntryForm({ schema, initialData, onSubmit, onCancel, submitLabel }: Ent
 export function InventoryView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { experienceInventories, tags, addInventoryEntry, updateInventoryEntry, deleteInventoryEntry } = useStore();
+  const { experienceInventories, addInventoryEntry, updateInventoryEntry, deleteInventoryEntry } = useStore();
 
   const inventory = experienceInventories.find((inv) => inv.id === id);
 
@@ -155,8 +154,6 @@ export function InventoryView() {
       </div>
     );
   }
-
-  const inventoryTags = tags.filter((tag) => inventory.tags.includes(tag.id));
 
   const handleAddEntry = (data: Record<string, unknown>) => {
     addInventoryEntry(inventory.id, data);
@@ -206,13 +203,6 @@ export function InventoryView() {
               <span className="text-sm text-[var(--color-text-secondary)]">
                 {inventory.entries.length} entries
               </span>
-              {inventoryTags.length > 0 && (
-                <div className="flex items-center gap-1">
-                  {inventoryTags.map((tag) => (
-                    <Tag key={tag.id} name={tag.name} color={tag.color} size="sm" />
-                  ))}
-                </div>
-              )}
             </div>
           </div>
           {!showAddForm && (

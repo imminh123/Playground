@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Select } from './Select';
-import { TagInput } from './TagInput';
 import { useStore } from '../store/useStore';
 import { FileIcon } from './FileIcon';
 import type { AssetType } from '../types';
@@ -50,7 +49,6 @@ export function UploadModal({ isOpen, onClose }: UploadModalProps) {
   const { assets, addAsset, currentFolderId } = useStore();
   const [files, setFiles] = useState<FileUpload[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string>(currentFolderId || 'root');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
   const folders = assets.filter((a) => a.type === 'folder');
@@ -109,7 +107,6 @@ export function UploadModal({ isOpen, onClose }: UploadModalProps) {
         addAsset({
           name: fileUpload.file.name,
           type,
-          tags: selectedTags,
           size: fileUpload.file.size,
           parentId: selectedFolder === 'root' ? null : selectedFolder,
         });
@@ -117,7 +114,6 @@ export function UploadModal({ isOpen, onClose }: UploadModalProps) {
     });
 
     setFiles([]);
-    setSelectedTags([]);
     onClose();
   };
 
@@ -125,7 +121,6 @@ export function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
   const handleClose = () => {
     setFiles([]);
-    setSelectedTags([]);
     onClose();
   };
 
@@ -222,17 +217,6 @@ export function UploadModal({ isOpen, onClose }: UploadModalProps) {
             onChange={setSelectedFolder}
             options={folderOptions}
           />
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-[var(--color-text-secondary)]">
-              Tags
-            </label>
-            <TagInput
-              selectedTagIds={selectedTags}
-              onChange={setSelectedTags}
-              placeholder="Add tags to all files..."
-            />
-          </div>
         </div>
 
         {/* Actions */}

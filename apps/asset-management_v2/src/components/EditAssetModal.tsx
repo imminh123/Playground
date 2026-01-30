@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
-import { TagInput } from './TagInput';
 import { useStore } from '../store/useStore';
 import type { Asset, ExperienceInventory } from '../types';
 
@@ -13,15 +12,13 @@ interface EditAssetModalProps {
 }
 
 export function EditAssetModal({ isOpen, onClose, asset }: EditAssetModalProps) {
-  const { updateAsset, updateExperienceInventory, updateAssetTags } = useStore();
+  const { updateAsset, updateExperienceInventory } = useStore();
   const [name, setName] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (asset) {
       setName(asset.name);
-      setSelectedTags(asset.tags);
     }
   }, [asset]);
 
@@ -38,14 +35,12 @@ export function EditAssetModal({ isOpen, onClose, asset }: EditAssetModalProps) 
     } else {
       updateAsset(asset.id, { name: name.trim() });
     }
-    updateAssetTags(asset.id, selectedTags);
 
     handleClose();
   };
 
   const handleClose = () => {
     setName('');
-    setSelectedTags([]);
     setError('');
     onClose();
   };
@@ -64,17 +59,6 @@ export function EditAssetModal({ isOpen, onClose, asset }: EditAssetModalProps) 
           error={error}
           autoFocus
         />
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-[var(--color-text-secondary)]">
-            Tags
-          </label>
-          <TagInput
-            selectedTagIds={selectedTags}
-            onChange={setSelectedTags}
-            placeholder="Add tags..."
-          />
-        </div>
 
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--color-border-subtle)]">
           <Button variant="ghost" onClick={handleClose}>

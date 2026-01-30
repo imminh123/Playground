@@ -4,7 +4,6 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
-import { TagInput } from './TagInput';
 import { useStore } from '../store/useStore';
 import type { SchemaColumn } from '../types';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,7 +24,6 @@ const COLUMN_TYPES = [
 export function CreateInventoryModal({ isOpen, onClose }: CreateInventoryModalProps) {
   const { addExperienceInventory, currentFolderId } = useStore();
   const [name, setName] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [columns, setColumns] = useState<SchemaColumn[]>([
     { id: uuidv4(), name: '', type: 'text', required: false },
   ]);
@@ -67,7 +65,6 @@ export function CreateInventoryModal({ isOpen, onClose }: CreateInventoryModalPr
     addExperienceInventory({
       name: name.trim(),
       type: 'experience-inventory',
-      tags: selectedTags,
       parentId: currentFolderId,
       schema: validColumns,
       entries: [],
@@ -78,7 +75,6 @@ export function CreateInventoryModal({ isOpen, onClose }: CreateInventoryModalPr
 
   const handleClose = () => {
     setName('');
-    setSelectedTags([]);
     setColumns([{ id: uuidv4(), name: '', type: 'text', required: false }]);
     setErrors({});
     onClose();
@@ -98,17 +94,6 @@ export function CreateInventoryModal({ isOpen, onClose }: CreateInventoryModalPr
           error={errors.name}
           autoFocus
         />
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-[var(--color-text-secondary)]">
-            Tags (optional)
-          </label>
-          <TagInput
-            selectedTagIds={selectedTags}
-            onChange={setSelectedTags}
-            placeholder="Add tags..."
-          />
-        </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
