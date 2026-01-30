@@ -49,7 +49,7 @@ interface StoreState {
   setActiveTab: (tab: 'assets' | 'companion') => void;
 }
 
-export const useStore = create<StoreState>((set, get) => ({
+export const useStore = create<StoreState>((set) => ({
   // Initial Data
   assets: mockAssets,
   experienceInventories: mockExperienceInventories,
